@@ -1,0 +1,42 @@
+oți studenții de sine stătător vor forma echipe a câte 3 membri din cadrul grupei academice. Componența grupelor va fi aprobată de profesor, inclusiv echipele de 2 sau 4 membri.
+Echipele trebuie formate operativ, în limita termenului de timp anunțat de profesor la ora de curs.
+
+Obiectivele lucrării date de laborator sunt focusate pe însușirea abilităților de lucru cu metodele de acces la floppy disk, în special citirea și scrierea datelor, dar nu se limitează doar la acestea. Procedurile date se extind si asupra altor medii de stocare permanentă a datelor precum sunt discurile HDD.
+
+Volumul total la dischetei de 1474560 bytes va fi structural în 96 de blocuri logice a câte 30 de sectoare fiecare. Fiecare student va avea alocat un bloc individual de 15360 bytes, pentru înscrierea datelor sale după cum urmează.
+Distribuția blocurilor este reprezentată în fișierul inclus (”Floppy space distribution.xlsx”).
+
+
+1. În primul și în ultimul sector al blocului fiecărui student (pe dischetă), trebuie înscrisă informația textuală după următorul format (fără ghilimele): ”@@@FAF-21* Prenume NUME###”.
+Acest șir de text trebuie dublat de 10 ori fără caractere adiționale de delimitare.
+Exemple:
+
+@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###@@@FAF-212 Vlad URSU###
+
+@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###@@@FAF-211 Andreia-Cristina SIRETANU###
+
+ 
+
+2. Creați un program în limbajul de asamblare care va avea următoarele funcții:
+
+
+(KEYBOARD ==> FLOPPY) : Citirea de la tastatură a unui string cu lungimea maximală de 256 caracetre (corectarea cu backspace trebuie să funcționeze) și scrierea acestui șir pe dischetă de "N" ori, începând cu adresa {Head, Track, Sector}. După detectarea tastei ENTER, dacă lungimea șirului este mai mare ca 0 (zero), trebuie afișată o linie goală și apoi șirul recent introdus. Variabilele "N", "Head", "Track" și "Sector" trebuie citite vizibil de la tastatură. După finisarea operației de scriere pe dischetă, trebuie de afișat la ecran codul de eroare
+
+(FLOPPY ==> RAM) : Citirea de pe dischetă a "N" sectoare începând cu adresa {Head, Track, Sector} și transferul acestor date în memoria RAM începând cu adresa {XXXX:YYYY}. După finisarea operației de citire de pe dischetă, trebuie de afișat la ecran codul de eraore. După codul de eroare, trebuie de afișat la ecran tot volumul de date aflat la adresa {XXXX:YYYY} care a fost citit de pe dischetă. Dacă volumul de date afișat este mai mare decât o pagină video atunci este necesar de implementat paginație prin apăsarea tastei ”SPACE”. Variabilele "N", "Head", "Track" și "Sector" precum și adresa {XXXX:YYYY}, la fel trebuie citite de la tastatură.
+
+(RAM ==> FLOPPY) : Scrierea pe dischetă începând cu adresa {Head, Track, Sector} a unui volum de "Q" bytes, din memoria RAM începând de la adreasa {XXXX:YYYY}. Blocul de date de "Q" bytes trebuie afișat la ecran, iar după finisarea operației de scriere pe dischetă, trebuie de afișat la ecran codul de eroare.
+ 
+
+3. După executarea unei funcții de mai sus, programul trebuie să fie gata la executarea următoarei funcții (oricare funcție din cele 3 descrise mai sus).
+
+ 
+
+4. Codul compilat este preferabil să nu depășească 512 bytes. În caz contrar, este necesar de implementat ocolirea acestei restricții și în final trebuie creată imaginea bootabilă a dischetei care să funcționeze în VirtualBox.
+
+ 
+
+5. Fiecare echipă trebuie să perfecteze un raport structurat, inclusiv cu concluzie, similar cu lucrările anterioare. Raportul trebuie să includă codul-sursă complet și funcțional, precum și procedura completă (testată) de compliare și de producere a imaginii bootabile, care să funcționeze corect în VirtualBox. Dacă descrierea procedurii de creare a imaginii bootabile va lipsi din raport sau dacă procedura nu va fi completă sau nu va funcționa (nu va putea fi reprodusă), întreaga echipă riscă să primească nota 5(CINCI)!! Din acest considerent este necesar ca fiecare membru a echipei să testeze procedura. În raport este necesar să specificați inclusiv versiunea compilatorului folosit și a tuturor altor componente sau dependențe care au fost folosite în procesul de construcție (build) a imaginii bootabile.
+
+ 
+
+6. Raportul trebuie încărcat stric în formatul PDF !!
