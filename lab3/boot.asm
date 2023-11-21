@@ -4,8 +4,8 @@ ORG 7c00H
 %define BACKSPACE 0x08
 %define ENTER 0x0D
 %define ESC 0x1B
-%define ARROW_UP 0x48
-%define ARROW_DOWN 0x50
+%define ARROW_UP_SCANCODE 0x48
+%define ARROW_DOWN_SCANCODE 0x50
 %define MAX_CHARACTER_COUNT 64
 
 %define MENU_MESSAGES_COUNT 3
@@ -49,14 +49,51 @@ clear_screen:
     ret
 
 menu:
-    call clear_screen; clear the screen
     call print_menu; print the menu
-    jmp $
-    menu_read_char:
+    .menu_read_char:
         mov ah, 0
         int 16h
+    
+    cmp ah, ARROW_UP_SCANCODE; if the character is arrow up
+    je .menu_handle_arrow_up; jump to handle_arrow_up
+    cmp ah, ARROW_DOWN_SCANCODE; if the character is arrow down
+    je .menu_handle_arrow_down; jump to handle_arrow_down
+    cmp al, ENTER; if the character is enter
+    je .menu_handle_enter; jump to handle_enter
+    jmp .menu_read_char; else jump to read_char
+
+    .menu_handle_arrow_up:
+        ;; decrement the menu selection and get the modulo of the menu selection and the number of messages
+        dec byte [menu_selection]
+        cmp byte [menu_selection], -1
+        jne .menu_handle_arrow_up_not_overflow
+        mov byte [menu_selection], MENU_MESSAGES_COUNT - 1
+        .menu_handle_arrow_up_not_overflow:
+        call print_menu; print the menu
+        jmp .menu_read_char; read another character
+    
+    .menu_handle_arrow_down:
+        ;; incremenet the menu selection and get the modulo of the menu selection and the number of messages
+        inc byte [menu_selection]
+        cmp byte [menu_selection], MENU_MESSAGES_COUNT
+        jne .menu_handle_arrow_down_not_overflow
+        mov byte [menu_selection], 0
+        .menu_handle_arrow_down_not_overflow:
+        call print_menu; print the menu
+        jmp .menu_read_char; read another character
+    
+    .menu_handle_enter:
+        ;; not yet implemented
+        cmp byte [menu_selection], 0
+        ; je .menu_handle_keyboard_floppy
+        cmp byte [menu_selection], 1
+        ; je .menu_handle_floppy_ram
+        cmp byte [menu_selection], 2
+        ; je .menu_handle_ram_floppy
+        jmp .menu_read_char; read another character
 
 print_menu:
+    call clear_screen
     mov cl, 0
     mov si, MENU_MESSAGES
     .print_menu_loop:
@@ -152,7 +189,6 @@ handle_enter:
     popa; restore all registers
     ret
 
-message db "Hello, World!", 0
 BOOT_DISK dw 0
 menu_selection db 0
 
@@ -169,8 +205,8 @@ cursor_y db 1
 
 row db 0
 
-%include "lab3/utils/string.asm"
-%include "lab3/utils/conversion.asm"
+%include "lab3/utils/string/common.asm"
+; %include "lab3/utils/conversion.asm"
 times 510-($-$$) db 0
 db 0x55, 0xAA
 
