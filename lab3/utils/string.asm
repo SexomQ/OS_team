@@ -4,7 +4,7 @@ pointer_store2 dw 0 ; used by str_equal to avoid changing extra registers
 ;; Gets string length
 ;; Parameters: es:bp - pointer to string
 ;; Returns:    cx    - string length
-
+;; Notes:       String must be zero terminated
 str_len:
     mov cx, 0
     mov [pointer_store], bp
@@ -29,10 +29,12 @@ str_len:
 ;; Returns:    None
 print_string:
     pusha
+    mov si, bp
     ;; Get string length
     call str_len
     mov ax, 1300h
     int 10h
+    mov bp, si
     popa
     ret
 
