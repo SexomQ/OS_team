@@ -1,3 +1,4 @@
+
 pointer_store dw 0 ; used by str_len to avoid changing extra registers
 pointer_store2 dw 0 ; used by str_equal to avoid changing extra registers
 

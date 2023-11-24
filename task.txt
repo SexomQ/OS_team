@@ -1,4 +1,4 @@
-oți studenții de sine stătător vor forma echipe a câte 3 membri din cadrul grupei academice. Componența grupelor va fi aprobată de profesor, inclusiv echipele de 2 sau 4 membri.
+Toți studenții de sine stătător vor forma echipe a câte 3 membri din cadrul grupei academice. Componența grupelor va fi aprobată de profesor, inclusiv echipele de 2 sau 4 membri.
 Echipele trebuie formate operativ, în limita termenului de timp anunțat de profesor la ora de curs.
 
 Obiectivele lucrării date de laborator sunt focusate pe însușirea abilităților de lucru cu metodele de acces la floppy disk, în special citirea și scrierea datelor, dar nu se limitează doar la acestea. Procedurile date se extind si asupra altor medii de stocare permanentă a datelor precum sunt discurile HDD.
