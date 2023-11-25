@@ -2,6 +2,9 @@ BITS 16
 ORG 7c00H
 
 start:
+    mov [BOOT_DISK], dl; save boot disk number
+
+    call clear_screen
     mov bh, 0                 
     mov ax, 0H
     mov es, ax                 
@@ -49,7 +52,7 @@ kernel_load:
     mov es, bx
     mov bx, 0x0000
 
-    mov dl, 0x00 ; boot from drive 0
+    mov dl, [BOOT_DISK] ; boot from boot drive
     mov ch, 0x00 ; cylinder
     mov dh, 0x00 ; head
     mov cl, 0x02 ; sector read after boot sector
@@ -77,6 +80,12 @@ wait_for_enter:
 jump_to_kernel:
     jmp 0x7e00:0x0000
 
+clear_screen:
+    mov ah, 0x00
+    mov al, 0x03
+    int 0x10
+    ret
+
 disk_error:
     mov bh, 0                 
     mov ax, 0H
@@ -94,6 +103,7 @@ disk_error:
 msg dd "------> Welcome to TCA_OS! <------", 10, 13, 0
 press dd "Press ENTER to continue.", 10, 13, 0
 error_disk dd "Disk Error!", 10, 13, 0
+BOOT_DISK db 0
 
 times 510 - ($-$$) db 0
 dw 0xaa55

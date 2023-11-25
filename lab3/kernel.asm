@@ -1,5 +1,3 @@
-
-
 %define BACKSPACE 0x08
 %define ENTER 0x0D
 %define ESC 0x1B
@@ -10,8 +8,30 @@
 %define MENU_MESSAGES_COUNT 3
 %define BLOCK_ALEX 4
 
+%include "utils/string/common.asm"
+
+section .data
+    menu_selection db 0
+
+    KEYBOARD_FLOPPY_MSG db "KEYBOARD ==> FLOPPY", 0
+    FLOPPY_RAM_MSG db "FLOPPY ==> RAM", 0
+    RAM_FLOPPY_MSG db "RAM ==> FLOPPY", 0
+    SELECTED_PREFIX db "> ", 0
+    UNSELECTED_PREFIX db "  ", 0
+    MENU_MESSAGES dw KEYBOARD_FLOPPY_MSG, FLOPPY_RAM_MSG, RAM_FLOPPY_MSG
+    cursor_coords:
+        cursor_x db 0
+        cursor_y db 1
+
+    row db 0
+
+section .bss
+    buffer: resb 257
+
+section .text
+    global main
+
 main:
-    mov [BOOT_DISK], dl
     call menu
     jmp $
 
@@ -172,27 +192,4 @@ keyboard_to_floppy:
         popa; restore all registers
         jmp .ktf_read_char; read another character
 
-BOOT_DISK dw 0
-menu_selection db 0
-
-
-KEYBOARD_FLOPPY_MSG db "KEYBOARD ==> FLOPPY", 0
-FLOPPY_RAM_MSG db "FLOPPY ==> RAM", 0
-RAM_FLOPPY_MSG db "RAM ==> FLOPPY", 0
-SELECTED_PREFIX db "> ", 0
-UNSELECTED_PREFIX db "  ", 0
-MENU_MESSAGES dw KEYBOARD_FLOPPY_MSG, FLOPPY_RAM_MSG, RAM_FLOPPY_MSG
-cursor_coords:
-cursor_x db 0
-cursor_y db 1
-
-row db 0
-
-%include "utils/string/common.asm"
 ; %include "lab3/utils/conversion.asm"
-
-; times 510-($-$$) db 0
-; db 0x55, 0xAA
-
-buffer:
-space resb 257
