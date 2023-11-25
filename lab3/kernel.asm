@@ -6,7 +6,6 @@
 %define MAX_CHARACTER_COUNT 64
 
 %define MENU_MESSAGES_COUNT 3
-%define BLOCK_ALEX 4
 
 section .data
     menu_selection db 0
@@ -22,15 +21,34 @@ section .data
         cursor_y db 1
 
     row db 0
+    head dw 0
+    cylinder dw 0
+    sector dw 0
+    number dw 0
+
+    ALEX_MESSAGE db "@@@FAF-211 Alex ANDRIES###@@@", 0
+    TUDOR_MESSAGE db "@@@FAF-211 Tudor SCLIFOS###@@@", 0
+    CRISTINA_MESSAGE db "@@@FAF-211 Cristina TARNA###@@@", 0
+    FLOPPY_SUCCESS_MSG db "Floppy read/write success", 0
+    FLOPPY_ERROR_MSG db "Floppy read/write error", 0
 
 section .bss
-    buffer: resb 257
+    buffer resb 257
+    floppy_buffer resb 512
 
 section .text
     global main
 
 main:
+    call insert_initial_floppy_data
     call menu
+    ; mov si, floppy_buffer
+    ; mov bh, 0
+    ; mov bl, 07H
+    ; mov dh, 0
+    ; mov dl, 0
+
+    call print_string
     jmp $
 
 clear_screen:
@@ -76,8 +94,7 @@ menu:
     .menu_handle_enter:
         ;; not yet implemented
         cmp byte [menu_selection], 0
-        call keyboard_to_floppy
-        jmp menu
+        je keyboard_to_floppy
         cmp byte [menu_selection], 1
         ; je .menu_handle_floppy_ram
         cmp byte [menu_selection], 2
@@ -87,7 +104,7 @@ menu:
 print_menu:
     call clear_screen
     mov cl, 0
-    mov si, MENU_MESSAGES
+    mov di, MENU_MESSAGES
     .print_menu_loop:
         cmp cl, MENU_MESSAGES_COUNT; if the message number is equal to the number of messages
         je .print_menu_end; jump to print_menu_end
@@ -99,21 +116,22 @@ print_menu:
         je .print_menu_selected; jump to print_selected
         jmp .print_menu_unselected; else jump to print_unselected
         .print_menu_selected:
-            mov bp, SELECTED_PREFIX
+            mov si, SELECTED_PREFIX
             jmp .print_menu_prefix
         .print_menu_unselected:
-            mov bp, UNSELECTED_PREFIX
+            mov si, UNSELECTED_PREFIX
         .print_menu_prefix:
             call print_string; print the prefix
-        mov bp, [si]; pointer to the message
+        mov si, [di]; pointer to the message
         mov dl, 3; column
         call print_string; print the message
-        add si, 2; increment the message pointer
+        add di, 2; increment the message pointer
         inc cl; increment the message number
         jmp .print_menu_loop; loop
     .print_menu_end:
         ret
 
 %include "utils/string/common.asm"
+%include "tasks/initial_floppy_data.asm"
 %include "tasks/keyboard_to_floppy.asm"
 ; %include "lab3/utils/conversion.asm"

@@ -74,3 +74,5 @@ keyboard_to_floppy:
         int 10h
         popa; restore all registers
         jmp .ktf_read_char; read another character
+    
+    jmp menu
