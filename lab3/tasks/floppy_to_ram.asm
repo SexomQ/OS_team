@@ -56,54 +56,37 @@ s
 
     call clear_current_row
 
-    ; print the ram address
-    mov ax, [ram_address]
-    call hex_to_string
-    mov si, [es:di]
-    mov bh, 0
-    mov bl, 07H
-    mov dh, 0
-    mov dl, 0
-    call print_string
+    call read_floppy_ram
+    call print_str_from_ram
 
 
     
 
     ; jmp menu
 
-read_sectors_from_drive:
-    ; Input: bx - drive number, cx - sector count, dx - offset, si - RAM address, di - buffer address
-    ; Output: Data read from the drive is stored in the 'buffer' array
+read_floppy_ram:
+    ; Set up the RAM address to store the data
+    mov bx, 7c00h  ; RAM address to store the data
+    mov es, bx  ; Set the segment register to the RAM address
+    mov bx, 0x0000  ; Offset to the RAM address
 
-    ; Convert the sector count and offset to CHS values if needed
-    ; For simplicity, assuming a flat addressing model (LBA addressing)
-    mov ax, 0x0201       ; AH=02h (read sectors), AL=01h (number of sectors to read)
-    mov ch, 0            ; Cylinder number (assuming LBA)
-    mov cl, byte [ram_offset] ; Sector number
-    mov dh, 0            ; Head number
-    mov dl, byte [bx]    ; Drive number
+    ; Set up the floppy disk parameters
+    mov ah, 0x02  ; Read sector function
+    mov al, [number_of_sectors]  ; Number of sectors to read
+    mov ch, [cylinder]  ; Cylinder number
+    mov cl, [sector]  ; Sector number
+    mov dh, [head]  ; Head number
+    mov dl, [BOOT_DISK]  ; Drive number (0x00 for floppy disk)
 
-    ; Calculate LBA address (if needed)
-    ; You may need to adjust this calculation based on your drive's geometry
-    mov ax, [ram_offset]
-    mov bx, 512           ; Sector size (assuming 512 bytes)
-    mul bx
-    add ax, [si]
-    mov di, ax            ; LBA address in DI
-
-    ; Prepare buffer address
-    mov es, di            ; ES:DI points to the destination buffer
-
-    ; Issue BIOS interrupt 0x13 to read sectors
-    int 0x13
-
-    ; Check for error (AH should be 0)
-    cmp ah, 0
-    jne .read_error
-
+    int 0x13  ; BIOS interrupt
     ret
+    
+print_str_from_ram:
+    mov si, [es:bx]
+    mov bh, 0
+    mov bl, 07H
+    mov dh, 0
+    mov dl, 0
+    call print_string   
 
-    .read_error:
-    ; Handle read error (AH contains error code)
-    ; Implement your error handling logic here
     ret
