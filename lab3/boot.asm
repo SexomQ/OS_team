@@ -67,6 +67,7 @@ kernel_load:
     mov ds, ax
     mov es, ax
     mov ss, ax
+    mov sp, ax
 
 wait_for_enter:
     mov ah, 0
@@ -78,6 +79,7 @@ wait_for_enter:
     jmp wait_for_enter
 
 jump_to_kernel:
+    mov dl, [BOOT_DISK]
     jmp 0x7e00:0x0000
 
 clear_screen:

@@ -8,6 +8,7 @@
 %define MENU_MESSAGES_COUNT 3
 
 section .data
+    BOOT_DISK db 0
     menu_selection db 0
 
     KEYBOARD_FLOPPY_MSG db "KEYBOARD ==> FLOPPY", 0
@@ -40,6 +41,7 @@ section .text
     global main
 
 main:
+    mov [BOOT_DISK], dl
     call insert_initial_floppy_data
     call menu
     ; mov si, floppy_buffer
@@ -47,8 +49,7 @@ main:
     ; mov bl, 07H
     ; mov dh, 0
     ; mov dl, 0
-
-    call print_string
+    ; call print_string
     jmp $
 
 clear_screen:
@@ -132,6 +133,7 @@ print_menu:
         ret
 
 %include "utils/string/common.asm"
+%include "utils/conversion.asm"
 %include "tasks/initial_floppy_data.asm"
 %include "tasks/keyboard_to_floppy.asm"
 ; %include "lab3/utils/conversion.asm"

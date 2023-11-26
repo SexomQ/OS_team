@@ -40,3 +40,28 @@ string_to_int:
         mov ax, [result]
         ret
 
+;; Converts uint to string
+;; Parameters: ax - uint to convert
+;;             es:di - buffer to store string
+;; Returns:    Nothing
+;; Mutates:    es:di
+int_to_string:
+    pusha
+    mov bx, 10
+    mov cx, 0
+    .int_to_string_loop:
+        xor dx, dx
+        div bx
+        push dx
+        inc cx
+        cmp ax, 0
+        jne .int_to_string_loop
+    .int_to_string_loop2:
+        pop dx
+        add dl, '0'
+        mov [es:di], dl
+        inc di
+        loop .int_to_string_loop2
+    mov byte [es:di], 0
+    popa
+    ret
