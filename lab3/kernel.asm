@@ -26,6 +26,10 @@ section .data
     cylinder dw 0
     sector dw 0
     number dw 0
+    number_of_sectors dw 0
+    ram_address dw 0
+    ram_offset dw 0
+    
 
     ALEX_MESSAGE db "@@@FAF-211 Alex ANDRIES###@@@", 0
     TUDOR_MESSAGE db "@@@FAF-211 Tudor SCLIFOS###@@@", 0
@@ -37,11 +41,14 @@ section .data
     CYLINDER_PROMPT db "Enter cylinder: ", 0
     SECTOR_PROMPT db "Enter sector: ", 0
     REPETITIONS_PROMPT db "Enter number of repetitions: ", 0
+    NUMBER_OF_SECTORS_PROMPT db "Enter number of sectors: ", 0
+    RAM_ADDRESS_PROMPT db "Enter RAM address: ", 0
+    RAM_OFFSET_PROMPT db "Enter RAM offset: ", 0
 
 section .bss
-    conversion_buffer resb 32
     buffer resb 257
     floppy_buffer resb 512
+    conversion_buffer resb 32
 
 section .text
     global main
@@ -103,7 +110,7 @@ menu:
         cmp byte [menu_selection], 0
         je keyboard_to_floppy
         cmp byte [menu_selection], 1
-        ; je .menu_handle_floppy_ram
+        je menu_handle_floppy_ram
         cmp byte [menu_selection], 2
         ; je .menu_handle_ram_floppy
         jmp .menu_read_char; read another character
@@ -143,4 +150,5 @@ print_menu:
 %include "utils/io.asm"
 %include "tasks/initial_floppy_data.asm"
 %include "tasks/keyboard_to_floppy.asm"
+%include "tasks/floppy_to_ram.asm"
 ; %include "lab3/utils/conversion.asm"
