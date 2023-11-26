@@ -23,10 +23,11 @@ section .data
         cursor_y db 0
 
     row db 0
-    head dw 0
-    cylinder dw 0
-    sector dw 0
+    head db 0
+    cylinder db 0
+    sector db 0
     number dw 0
+    sector_write_count dw 0
     number_of_sectors dw 0
     ram_address dw 0
     ram_offset dw 0
@@ -36,12 +37,14 @@ section .data
     TUDOR_MESSAGE db "@@@FAF-211 Tudor SCLIFOS###@@@", 0
     CRISTINA_MESSAGE db "@@@FAF-211 Cristina TARNA###@@@", 0
     FLOPPY_SUCCESS_MSG db "Floppy read/write success", 0
-    FLOPPY_ERROR_MSG db "Floppy read/write error", 0
+    FLOPPY_ERROR_MSG db "Floppy read/write error: ", 0
     TEXT_PROMPT db "Enter text: ", 0
     HEAD_PROMPT db "Enter head: ", 0
     CYLINDER_PROMPT db "Enter cylinder: ", 0
     SECTOR_PROMPT db "Enter sector: ", 0
     REPETITIONS_PROMPT db "Enter number of repetitions: ", 0
+    REPETITIONS_BETWEEN_MSG db "Number msut be between 1 and 30_000", 0
+    WAIT_FOR_ENTER_MSG db "Press ENTER to continue", 0
     NUMBER_OF_SECTORS_PROMPT db "Enter number of sectors: ", 0
     RAM_ADDRESS_PROMPT db "Enter RAM address: ", 0
     RAM_OFFSET_PROMPT db "Enter RAM offset: ", 0

@@ -1,5 +1,14 @@
 column_temp db 0
 
+wait_for_enter:
+    pusha
+    mov ah, 0
+    int 16h
+    cmp al, ENTER
+    jne wait_for_enter
+    popa
+    ret
+
 ;; Syncs the cursor with the coordinates stored in cursor_coords
 sync_cursor:
     pusha
@@ -121,6 +130,9 @@ prompt:
         jmp .prompt_read_char; read another character
 
     .prompt_handle_enter:
+        ;; don't do anything if string length is 0
+        cmp cx, 0
+        je .prompt_read_char
         mov byte [di], 0; null terminate the string
         inc di; increment the buffer pointer
         popa
