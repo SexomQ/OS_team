@@ -77,25 +77,24 @@ prompt:
 
     call str_len; get the length of the prompt string
     mov byte [cursor_x], cl
-    inc byte [cursor_x]; increment the cursor x coordinate
     call sync_cursor; sync the cursor with the coordinates
     mov cx, 0; character counter
     .prompt_read_char:
         mov ah, 0
         int 16h
 
-        cmp al, ESC; if the character is backspace
+        cmp al, BACKSPACE; if the character is backspace
         je .prompt_handle_backspace; jump to handle_backspace
         cmp al, ENTER; if the character is enter
         je .prompt_handle_enter; jump to handle_enter
         jmp .prompt_handle_symbol; jump to handle_symbol
 
     .prompt_handle_symbol:
-        cmp cx, [MAX_CHARACTER_COUNT]; if the character counter is equal to the maximum character count
+        cmp cx, MAX_CHARACTER_COUNT; if the character counter is equal to the maximum character count
         je .prompt_read_char
 
-        mov [si], al; store the character in the buffer
-        inc si; increment the buffer pointer
+        mov [di], al; store the character in the buffer
+        inc di; increment the buffer pointer
         inc cx; increment the character counter
         inc byte [cursor_x]; increment the cursor x coordinate
         pusha; save all registers
@@ -108,14 +107,14 @@ prompt:
         cmp cx, 0; if the character counter is 0, do nothing
         je .prompt_read_char
 
-        dec si; decrement the buffer pointer
+        dec di; decrement the buffer pointer
         dec cx; decrement the character counter
         dec byte [cursor_x]; decrement the cursor x coordinate
         call sync_cursor;
         pusha; save all registers
         mov ah, 0AH; print the character at the cursor position
         mov bh, 0; page number
-        mov cx, 2; number of times to print the character
+        mov cx, 1; number of times to print the character
         mov al, ' '; print a space
         int 10h
         popa; restore all registers

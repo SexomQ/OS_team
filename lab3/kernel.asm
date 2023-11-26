@@ -3,7 +3,7 @@
 %define ESC 0x1B
 %define ARROW_UP_SCANCODE 0x48
 %define ARROW_DOWN_SCANCODE 0x50
-%define MAX_CHARACTER_COUNT 64
+%define MAX_CHARACTER_COUNT 256
 
 %define MENU_MESSAGES_COUNT 3
 
@@ -11,6 +11,7 @@ section .data
     BOOT_DISK db 0
     menu_selection db 0
 
+    SPACE_STR db " ", 0
     KEYBOARD_FLOPPY_MSG db "KEYBOARD ==> FLOPPY", 0
     FLOPPY_RAM_MSG db "FLOPPY ==> RAM", 0
     RAM_FLOPPY_MSG db "RAM ==> FLOPPY", 0
