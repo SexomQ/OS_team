@@ -52,6 +52,7 @@ section .data
 section .bss
     buffer resb 257
     floppy_buffer resb 512
+    names_buffer resb 512
     conversion_buffer resb 32
 
 section .text

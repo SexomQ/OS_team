@@ -47,7 +47,7 @@ insert_initial_floppy_data:
     ;; Make the input string
     mov cx, MESSAGE_REPEAT_COUNT
     mov si, ALEX_MESSAGE
-    mov di, floppy_buffer
+    mov di, names_buffer
     call repeat_string
     ;;; Write the string to the floppy
     ;; convert LBA to CHS
@@ -56,7 +56,7 @@ insert_initial_floppy_data:
     ;; write the sector
     mov ah, 03H
     mov al, 01H
-    mov bx, floppy_buffer
+    mov bx, names_buffer
     mov dl, [BOOT_DISK]
     int 13H
     jc print_io_error
@@ -66,14 +66,14 @@ insert_initial_floppy_data:
     ;; write the sector
     mov ah, 03H
     mov al, 01H
-    mov bx, floppy_buffer
+    mov bx, names_buffer
     mov dl, [BOOT_DISK]
     int 13H
     jc print_io_error
 
     mov cx, MESSAGE_REPEAT_COUNT
     mov si, TUDOR_MESSAGE
-    mov di, floppy_buffer
+    mov di, names_buffer
     call repeat_string
     ;;; Write the string to the floppy
     ;; convert LBA to CHS
@@ -82,7 +82,7 @@ insert_initial_floppy_data:
     ;; write the sector
     mov ah, 03H
     mov al, 01H
-    mov bx, floppy_buffer
+    mov bx, names_buffer
     mov dl, [BOOT_DISK]
     int 13H
     jc print_io_error
@@ -92,14 +92,14 @@ insert_initial_floppy_data:
     ;; write the sector
     mov ah, 03H
     mov al, 01H
-    mov bx, floppy_buffer
+    mov bx, names_buffer
     mov dl, [BOOT_DISK]
     int 13H
     jc print_io_error
 
     mov cx, MESSAGE_REPEAT_COUNT
     mov si, CRISTINA_MESSAGE
-    mov di, floppy_buffer
+    mov di, names_buffer
     call repeat_string
     ;;; Write the string to the floppy
     ;; convert LBA to CHS
@@ -108,7 +108,7 @@ insert_initial_floppy_data:
     ;; write the sector
     mov ah, 03H
     mov al, 01H
-    mov bx, floppy_buffer
+    mov bx, names_buffer
     mov dl, [BOOT_DISK]
     int 13H
     jc print_io_error
@@ -118,7 +118,7 @@ insert_initial_floppy_data:
     ;; write the sector
     mov ah, 03H
     mov al, 01H
-    mov bx, floppy_buffer
+    mov bx, names_buffer
     mov dl, [BOOT_DISK]
     int 13H
     jc print_io_error
