@@ -6,6 +6,12 @@ HEADS dw 2
 %define SECTOR_BEGIN_ALEX 91
 %define SECTOR_END_ALEX 120
 
+%define SECTOR_BEGIN_TUDOR 661
+%define SECTOR_END_TUDOR 690
+
+%define SECTOR_BEGIN_CRISTINA 781
+%define SECTOR_END_CRISTINA 810
+
 ;; Converts a linear sector number to a CHS address.
 ;; Parameters: ax = linear sector number
 ;; Returns:    cx (bits 0-5)  = sector
@@ -56,6 +62,58 @@ insert_initial_floppy_data:
     jc print_io_error
     ;; convert LBA to CHS
     mov ax, SECTOR_END_ALEX
+    call lba_to_chs
+    ;; write the sector
+    mov ah, 03H
+    mov al, 01H
+    mov bx, floppy_buffer
+    mov dl, [BOOT_DISK]
+    int 13H
+    jc print_io_error
+
+    mov cx, MESSAGE_REPEAT_COUNT
+    mov si, TUDOR_MESSAGE
+    mov di, floppy_buffer
+    call repeat_string
+    ;;; Write the string to the floppy
+    ;; convert LBA to CHS
+    mov ax, SECTOR_BEGIN_TUDOR
+    call lba_to_chs
+    ;; write the sector
+    mov ah, 03H
+    mov al, 01H
+    mov bx, floppy_buffer
+    mov dl, [BOOT_DISK]
+    int 13H
+    jc print_io_error
+    ;; convert LBA to CHS
+    mov ax, SECTOR_END_TUDOR
+    call lba_to_chs
+    ;; write the sector
+    mov ah, 03H
+    mov al, 01H
+    mov bx, floppy_buffer
+    mov dl, [BOOT_DISK]
+    int 13H
+    jc print_io_error
+
+    mov cx, MESSAGE_REPEAT_COUNT
+    mov si, CRISTINA_MESSAGE
+    mov di, floppy_buffer
+    call repeat_string
+    ;;; Write the string to the floppy
+    ;; convert LBA to CHS
+    mov ax, SECTOR_BEGIN_CRISTINA
+    call lba_to_chs
+    ;; write the sector
+    mov ah, 03H
+    mov al, 01H
+    mov bx, floppy_buffer
+    mov dl, [BOOT_DISK]
+    int 13H
+    jc print_io_error
+    ;; convert LBA to CHS
+    mov ax, SECTOR_END_CRISTINA
     call lba_to_chs
     ;; write the sector
     mov ah, 03H
