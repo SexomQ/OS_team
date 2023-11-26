@@ -1,32 +1,32 @@
 result dw 0
 ;; Converts string to uint
-;; Parameters: es:bp - string to convert
+;; Parameters: si - string to convert
 ;; Returns:    ax - converted int
 ;;             bl - error code
 string_to_int:
     pusha
-    mov dx, bp; save pointer to string
+    mov dx, si; save pointer to string
     mov ax, 0
     mov word [result], 0
     .string_to_int_loop:
         ;; check if null character is reached
-        cmp byte [es:bp], 0
+        cmp byte [si], 0
         je .string_to_int_end
         ;; check if character is digit
-        cmp byte [es:bp], '0'
+        cmp byte [si], '0'
         jl .string_to_int_error
-        cmp byte [es:bp], '9'
+        cmp byte [si], '9'
         jg .string_to_int_error
         ;; convert character to int
         mov bx, 0
-        mov bl, [es:bp]
+        mov bl, [si]
         sub bl, '0'
         ;; multiply current number by 10
         mov cx, 10
         mul cx
         ;; add current digit
         add ax, bx
-        inc bp
+        inc si
         jmp .string_to_int_loop
     .string_to_int_error:
         popa
@@ -42,9 +42,9 @@ string_to_int:
 
 ;; Converts uint to string
 ;; Parameters: ax - uint to convert
-;;             es:di - buffer to store string
+;;             di - buffer to store string
 ;; Returns:    Nothing
-;; Mutates:    es:di
+;; Mutates:    di
 int_to_string:
     pusha
     mov bx, 10
@@ -59,9 +59,9 @@ int_to_string:
     .int_to_string_loop2:
         pop dx
         add dl, '0'
-        mov [es:di], dl
+        mov [di], dl
         inc di
         loop .int_to_string_loop2
-    mov byte [es:di], 0
+    mov byte [di], 0
     popa
     ret
