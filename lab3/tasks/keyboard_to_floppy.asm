@@ -1,50 +1,55 @@
 keyboard_to_floppy:
     call clear_screen
-    ; read a character from the keyboard
-    .ktf_read_char:
-        mov ah, 0
-        int 16h
+    ;; Get the text
+    mov si, TEXT_PROMPT
+    mov di, buffer
+    call prompt
+    ;; Print the text 2 lines below
+    mov si, buffer
+    mov bh, 0; page number
+    mov bl, 07H; text attribute
+    mov dx, 0300H; cursor coordinates
+    call print_string
 
-        cmp al, ESC; if the character is backspace
-        je .ktf_handle_backspace; jump to handle_backspace
-        cmp al, ENTER; if the character is enter
-        je .ktf_handle_enter; jump to handle_enter
-        jmp .ktf_handle_symbol; jump to handle_symbol
+    call clear_current_row
+    ;; Get the floppy head
+    mov si, HEAD_PROMPT
+    mov di, conversion_buffer
+    call prompt
+    ;; Convert the string to a number
+    mov si, conversion_buffer
+    call string_to_int
+    mov byte [head], al
 
-    .ktf_handle_symbol:
-        cmp cx, [MAX_CHARACTER_COUNT]; if the character counter is equal to the maximum character count
-        je .ktf_read_char
+    call clear_current_row
+    ;; Get the floppy cylinder
+    mov si, CYLINDER_PROMPT
+    mov di, conversion_buffer
+    call prompt
+    ;; Convert the string to a number
+    mov si, conversion_buffer
+    call string_to_int
+    mov byte [cylinder], al
 
-        mov [bx], al; store the character in the buffer
-        inc bx; increment the buffer pointer
-        inc cx; increment the character counter
-        inc byte [cursor_x]; increment the cursor x coordinate
-        pusha; save all registers
-        mov ah, 0eh; print the character
-        int 10h
-        popa; restore all registers
-        jmp .ktf_read_char; read another character
+    call clear_current_row
+    ;; Get the floppy sector
+    mov si, SECTOR_PROMPT
+    mov di, conversion_buffer
+    call prompt
+    ;; Convert the string to a number
+    mov si, conversion_buffer
+    call string_to_int
+    mov byte [sector], al
 
-    .ktf_handle_backspace:
-        cmp cx, 0; if the character counter is 0, do nothing
-        je .ktf_read_char
-
-        dec bx; decrement the buffer pointer
-        dec cx; decrement the character counter
-        dec byte [cursor_x]; decrement the cursor x coordinate
-        pusha; save all registers
-        mov ah, 02H; set the cursor position
-        mov bh, 0; page number
-        mov dx, [cursor_coords]; cursor coordinates
-        int 10h
-
-        mov ah, 0AH; print the character at the cursor position
-        mov bh, 0; page number
-        mov cx, 2; number of times to print the character
-        mov al, ' '; print a space
-        int 10h
-        popa; restore all registers
-        jmp .ktf_read_char; read another character
+    call clear_current_row
+    ;; Get the number of repetitions
+    mov si, REPETITIONS_PROMPT
+    mov di, conversion_buffer
+    call prompt
+    ;; Convert the string to a number
+    mov si, conversion_buffer
+    call string_to_int
+    mov byte [number], al
 
     .ktf_handle_enter:
         mov ax, 1300H; print string
@@ -73,6 +78,5 @@ keyboard_to_floppy:
         mov al, ' '; print a space
         int 10h
         popa; restore all registers
-        jmp .ktf_read_char; read another character
     
     jmp menu

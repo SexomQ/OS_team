@@ -44,7 +44,7 @@ start:
     int 10h         ; Call interrupt 10h
 
     mov dh, 1       ; Set DH: boot 2 sectors
-    mov dl, 0       ; set DL: boot from drive 0
+    mov dl, [BOOT_DISK]       ; set DL: boot from drive 0
 
 kernel_load:
     ; setup es:bx to point to the sector to load to memory
@@ -58,7 +58,7 @@ kernel_load:
     mov cl, 0x02 ; sector read after boot sector
 
     mov ah, 0x02 ; read disk function
-    mov al, 0x02 ; number of sectors to read
+    mov al, 0x04 ; number of sectors to read
     int 0x13     ; call interrupt 13h
 
     jc disk_error ; jump if carry flag is set

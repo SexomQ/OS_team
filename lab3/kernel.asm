@@ -19,7 +19,7 @@ section .data
     MENU_MESSAGES dw KEYBOARD_FLOPPY_MSG, FLOPPY_RAM_MSG, RAM_FLOPPY_MSG
     cursor_coords:
         cursor_x db 0
-        cursor_y db 1
+        cursor_y db 0
 
     row db 0
     head dw 0
@@ -32,8 +32,14 @@ section .data
     CRISTINA_MESSAGE db "@@@FAF-211 Cristina TARNA###@@@", 0
     FLOPPY_SUCCESS_MSG db "Floppy read/write success", 0
     FLOPPY_ERROR_MSG db "Floppy read/write error", 0
+    TEXT_PROMPT db "Enter text: ", 0
+    HEAD_PROMPT db "Enter head: ", 0
+    CYLINDER_PROMPT db "Enter cylinder: ", 0
+    SECTOR_PROMPT db "Enter sector: ", 0
+    REPETITIONS_PROMPT db "Enter number of repetitions: ", 0
 
 section .bss
+    conversion_buffer resb 32
     buffer resb 257
     floppy_buffer resb 512
 
@@ -134,6 +140,7 @@ print_menu:
 
 %include "utils/string/common.asm"
 %include "utils/conversion.asm"
+%include "utils/io.asm"
 %include "tasks/initial_floppy_data.asm"
 %include "tasks/keyboard_to_floppy.asm"
 ; %include "lab3/utils/conversion.asm"
