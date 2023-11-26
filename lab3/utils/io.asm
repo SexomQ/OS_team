@@ -84,7 +84,7 @@ prompt:
         mov ah, 0
         int 16h
 
-        cmp al, ESC; if the character is backspace
+        cmp al, BACKSPACE; if the character is backspace
         je .prompt_handle_backspace; jump to handle_backspace
         cmp al, ENTER; if the character is enter
         je .prompt_handle_enter; jump to handle_enter
