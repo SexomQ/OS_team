@@ -4,12 +4,12 @@ keyboard_to_floppy:
     mov si, TEXT_PROMPT
     mov di, buffer
     call prompt
+    call clear_screen
     ;; Print the text 2 lines below
     mov si, buffer
-    mov bh, 0; page number
-    mov bl, 07H; text attribute
-    mov dx, 0300H; cursor coordinates
+    mov dx, 0200H; cursor coordinates
     call print_string
+    mov dx, 0
 
     call clear_current_row
     ;; Get the floppy head
