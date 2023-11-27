@@ -47,25 +47,24 @@ menu_handle_floppy_ram:
 
     ; get the ram address
     mov si, RAM_ADDRESS_PROMPT
-    mov di, conversion_buffer
+    mov di, hex_conversion_buffer
     call prompt
     ;; Convert the string to a hex
-    mov si, conversion_buffer
-    call string_to_hex
+    mov si, hex_conversion_buffer
+    call hex_string_to_int
     mov [ram_address], ax
   
     call clear_current_row
 
-    mov ah, 0x02
-    mov dh, 0x00
-    mov dl, 0x00
-    int 0x10
-
-    jmp read_floppy_ram
+    ; mov di, conversion_buffer
+    ; mov ax, [number_of_sectors]
+    ; call int_to_string
+    ; mov si, hex_conversion_buffer
+    ; call print_string
 
 read_floppy_ram:
     ; Set up the RAM address to store the data
-    mov bx, 0x4000  ; RAM address to store the data
+    mov bx, [ram_address]  ; RAM address to store the data
     mov es, bx  ; Set the segment register to the RAM address
     mov bx, 0x0000  ; Offset to the RAM address
 
@@ -79,32 +78,96 @@ read_floppy_ram:
 
     int 0x13  ; BIOS interrupt
 
-    mov ax, 0x4000
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-
-    ; jmp menu
-
-print_ram:
-    xor cx, cx
-    mov bx, 0x4000
+    ; print the data from the RAM address
+    mov ch, byte [number_of_sectors]
+    pusha
+    mov bx, [ram_address]
     mov es, bx
     xor bx, bx
+    xor dx, dx
     mov ah, 0eh
-    call print_str_from_ram
 
-print_str_from_ram:
-    cmp cx, 512
-    je stop_printing
+    .loop_sectors:
+        cmp ch, 0
+        je stop_printing
 
-    mov al, [es:bx]
-    int 10h
+        xor dx, dx
+        .loop_sector:
+            cmp dx, 512
+            je .loop_sectors_dec
 
-    inc cx
-    inc bx
-    jmp print_str_from_ram
+            mov al, [es:bx]
+            int 10h
+
+            inc bx
+            inc dx
+            jmp .loop_sector
+
+        .loop_sectors_dec:
+            dec ch
+            jmp .loop_sectors
+    popa
+    jmp stop_printing
+    
+    ; jmp print_ram
+    ; ret
+
+; check_simp:
+;     ; mov di, conversion_buffer
+;     ; mov ax, [number_of_sectors]
+;     ; call int_to_string
+;     ; mov si, conversion_buffer
+;     ; call print_string
+
+;     mov byte [number_of_sectors], 0x05
+
+;     mov ch, byte [number_of_sectors]
+;     pusha
+;     .loop:
+;         cmp ch, 0
+;         je stop_printing
+
+;         mov al, "S"
+;         mov ah, 0x0e
+;         int 10h
+
+;         dec ch
+;         jmp .loop
+;     popa
+;     jmp stop_printing
+
+
+; print_ram:
+;     xor cx, cx
+;     mov bx, 0x4000
+;     mov es, bx
+;     xor bx, bx
+;     xor dx, dx
+;     mov ah, 0eh
+;     jmp print_str_from_ram
+
+; print_str_from_ram:
+;     cmp cx, 1024
+;     je stop_printing
+
+;     mov al, [es:bx]
+;     int 10h
+
+;     inc cx
+;     inc bx
+;     jmp print_str_from_ram
+
+; ; ; check_if_last_sector:
+; ; ;     cmp 
+; ; ;     je stop_printing
+; ; ;     dec dl
+
+; ; ;     xor cx, cx
+
+; ; ;     jmp print_str_from_ram
 
 
 stop_printing:
-    ret
+    mov al, "E"
+    mov ah, 0x0e
+    int 10h

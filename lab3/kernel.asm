@@ -4,12 +4,12 @@
 %define ARROW_UP_SCANCODE 0x48
 %define ARROW_DOWN_SCANCODE 0x50
 %define MAX_CHARACTER_COUNT 256
-%define SECTOR_VOLUME 200h
 
 %define MENU_MESSAGES_COUNT 3
 
 section .data
     BOOT_DISK db 0
+    SECTOR_SIZE dw 512
     menu_selection db 0
 
     SPACE_STR db " ", 0
@@ -29,9 +29,9 @@ section .data
     sector db 0
     number dw 0
     sector_write_count dw 0
-    number_of_sectors dw 0
-    ram_address dw 0
-    ram_offset dw 0
+    number_of_sectors db 0
+    ram_address dd 0
+    ram_offset dd 0
     
 
     ALEX_MESSAGE db "@@@FAF-211 Alex ANDRIES###@@@", 0
@@ -55,6 +55,7 @@ section .bss
     floppy_buffer resb 512
     names_buffer resb 512
     conversion_buffer resb 32
+    hex_conversion_buffer resb 64  
 
 section .text
     global main
