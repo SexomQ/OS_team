@@ -4,7 +4,7 @@
 %define SPACE 0x20
 %define ARROW_UP_SCANCODE 0x48
 %define ARROW_DOWN_SCANCODE 0x50
-%define MAX_CHARACTER_COUNT 256
+%define MAX_CHARACTER_COUNT 200
 
 %define MENU_MESSAGES_COUNT 3
 
@@ -46,6 +46,7 @@ section .data
     REPETITIONS_PROMPT db "Enter number of repetitions: ", 0
     REPETITIONS_BETWEEN_MSG db "Number msut be between 1 and 30_000", 0
     WAIT_FOR_ENTER_MSG db "Press ENTER to continue", 0
+    WAIT_FOR_ENTER_OR_SPACE_MSG db "Press ENTER to continue or SPACE to load more", 0
     NUMBER_OF_SECTORS_PROMPT db "Enter number of sectors: ", 0
     RAM_ADDRESS_PROMPT db "Enter RAM address: ", 0
     RAM_OFFSET_PROMPT db "Enter RAM offset: ", 0
