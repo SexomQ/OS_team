@@ -2,6 +2,14 @@
 menu_handle_floppy_ram:
     call clear_screen
 
+    mov byte [head], 0
+    mov byte [cylinder], 0
+    mov byte [sector], 0
+    mov byte [number_of_sectors], 0
+    mov word [ram_address], 0
+    mov word [ram_address + 2], 0
+    mov word [error_code], 0
+
     ;; Get the floppy head
     mov si, HEAD_PROMPT
     mov di, conversion_buffer
@@ -68,12 +76,6 @@ menu_handle_floppy_ram:
 
     call clear_current_row
 
-    ; mov di, conversion_buffer
-    ; mov ax, [number_of_sectors]
-    ; call int_to_string
-    ; mov si, conversion_buffer
-    ; call print_string
-
 read_floppy_ram:
     ; Set up the RAM address to store the data
     mov bx, [ram_address]  ; RAM address to store the data
@@ -112,7 +114,7 @@ read_floppy_ram:
     mov bl, 0x0F; reset color
 
     mov dx, 0200H;
-    mov si, WAIT_FOR_ENTER_MSG
+    mov si, WAIT_FOR_ENTER_OR_SPACE_MSG
     call print_string
     jmp .print_data
 
@@ -139,15 +141,18 @@ read_floppy_ram:
         jmp stop_printing
 
     .print_data:
+        pusha
+        xor ax, ax
+        xor bx, bx
+        xor cx, cx
+        xor dx, dx
+        xor bp, bp
         mov word [cursor_coords], 0400H
         call sync_cursor
 
         ; print the data from the RAM address
         mov cx, 0
-        pusha
-        mov bx, [ram_address]
-        mov es, bx
-        xor bx, bx
+        mov es, [ram_address]
         mov bx, [ram_address + 2]
         xor dx, dx
 
@@ -180,40 +185,33 @@ read_floppy_ram:
                 mov [remainder], ax
 
                 xor ax, ax
-                    mov es, [ram_address]
+                mov es, [ram_address]
                     ; xor bx, bx
                     ; mov bx, [ram_address + 2]
-                
-                ; ; mov ax, [remainder]
-                ; ; mov di, conversion_buffer
-                ; ; call int_to_string
-                ; ; mov si, conversion_buffer
-                ; ; mov dx, 0800H; cursor coordinates
-                ; ; mov bh, 0
-                ; ; call print_string
 
                 cmp word [remainder], 0
-                je stop_printing
+                je .wait_space_press
 
                 jmp .loop_sectors
 
         .wait_space_press:
             ; compare the key pressed to space or enter, do different things for each
-            ; mov ah, 0
-            ; int 16h
-            ; cmp al, 0x0d
-            ; je stop_printing
-            ; cmp al, 0x20
-            ;     xor ax, ax
-            ;     mov bx, [ram_address]
-            ;     mov es, bx
-            ;     xor bx, bx
-            ;     mov bx, [ram_address + 2]
-            ; je .loop_sectors
+            mov ah, 0
+            int 16h
+            cmp al, 0x0d
+            je stop_printing
+            cmp al, 0x20
+                ; xor ax, ax
+                ; mov bx, [ram_address]
+                ; mov es, bx
+                ; xor bx, bx
+                ; mov bx, [ram_address + 2]
+            je .loop_sectors
+
+            jmp .wait_space_press
 
         popa
-        jmp stop_printing
-        
+        jmp stop_printing     
 
 stop_printing:
     mov ax, 0x7e00
@@ -221,6 +219,9 @@ stop_printing:
     mov es, ax
     mov ss, ax
     mov sp, ax
+    mov bp, ax 
+    ; ; xor bx, bx
+    ; ; xor dx, dx
 
     call wait_for_enter
     mov word [cursor_coords], 0000H
