@@ -61,6 +61,7 @@ section .bss
     hex_conversion_buffer resb 64 
     ram_address resb 4
     three resb 2
+    ram_buffer resb 512
 
 section .text
     global main
