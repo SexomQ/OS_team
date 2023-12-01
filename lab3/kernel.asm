@@ -33,6 +33,7 @@ section .data
     number_of_sectors db 0
     error_code dw 0
     remainder dw 0
+    qbytes dw 0
 
     ALEX_MESSAGE db "@@@FAF-211 Alex ANDRIES###@@@", 0
     TUDOR_MESSAGE db "@@@FAF-211 Tudor SCLIFOS###@@@", 0

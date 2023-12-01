@@ -63,3 +63,21 @@ repeat_string:
 
     popa
     ret
+
+    ;; Concatenate a string N times
+;; Parameters: cx    - number of bytes to copy
+;;             si - pointer to string from ram
+;;             di    - pointer to output string
+;; Returns:    None
+get_string_from_ram:
+    pusha
+    .get_string_from_ram_loop:
+        mov al, [si]
+        mov [di], al
+        inc si
+        inc di
+        loop .get_string_from_ram_loop
+    mov byte [di], 0; add null terminator to output string
+
+    popa
+    ret

@@ -4,7 +4,7 @@ ram_to_floppy:
     mov byte [head], 0
     mov byte [cylinder], 0
     mov byte [sector], 0
-    mov byte [sector_write_count], 0
+    mov word [qbytes], 0
     mov word [ram_address], 0
     mov word [ram_address + 2], 0
 
@@ -70,11 +70,26 @@ ram_to_floppy:
     ;; Convert the string to a number
     mov si, conversion_buffer
     call string_to_int
-    mov byte [sector_write_count], al
+    mov byte [qbytes], al
 
     call clear_current_row
 
+write_from_ram_to_floppy:
+    ;; Read from RAM
+    ; Set up the RAM address to get the data
+    mov es, [ram_address]  ; RAM address to store the data
+    mov bp, [ram_address + 2] ; RAM offset to store the data
+
+    ; Set up the floppy buffer
+    mov di, floppy_buffer
+    mov cx, [qbytes] ; number of bytes to read
+    call get_string_from_ram
+
+    mov si, floppy_buffer
+    call print_string
     
+
+
     ; ; write the string to floppy
     ; mov ah, 3; write to floppy
     ; mov al, byte [sector_write_count]
