@@ -186,9 +186,6 @@ read_floppy_ram:
 
                 xor ax, ax
                 mov es, [ram_address]
-                    ; xor bx, bx
-                    ; mov bx, [ram_address + 2]
-
                 cmp word [remainder], 0
                 je .wait_space_press
 
@@ -201,11 +198,6 @@ read_floppy_ram:
             cmp al, 0x0d
             je stop_printing
             cmp al, 0x20
-                ; xor ax, ax
-                ; mov bx, [ram_address]
-                ; mov es, bx
-                ; xor bx, bx
-                ; mov bx, [ram_address + 2]
             je .loop_sectors
 
             jmp .wait_space_press
@@ -220,8 +212,6 @@ stop_printing:
     mov ss, ax
     mov sp, ax
     mov bp, ax 
-    ; ; xor bx, bx
-    ; ; xor dx, dx
 
     call wait_for_enter
     mov word [cursor_coords], 0000H
