@@ -68,31 +68,32 @@ int_to_string:
     ret
 
 
-hex_string_to_int:
-    ; Input: SI - pointer to the null-terminated hex string
-    ; Output: AX - hexadecimal value, BL - error code
+string_to_hex:
+    atoh_conv_loop:
+        cmp     byte [si], 0
+        je      atoh_conv_done
 
-    xor ax, ax  ; Clear AX
+        xor     ax, ax
+        mov     al, [si]
+        cmp     al, 65
+        jl      conv_digit  
 
-    .next_char:
-        lodsb  ; Load next byte from SI into AL, increment SI
+        conv_letter:
+            sub     al, 55
+            jmp     atoh_finish_iteration
 
-        ; Check if we've reached the end of the string
-        test al, al
-        jz .end
+        conv_digit:
+            sub     al, 48
 
-        ; Convert character to decimal
-        sub al, '0'
-        cmp al, 9
-        jbe .add
-        sub al, 7  ; Adjust for A-F
+        atoh_finish_iteration:
+            mov     bx, [di]
+            imul    bx, 16
+            add     bx, ax
+            mov     [di], bx
 
-    .add:
-        ; Add to AX, with multiplication by 16 (since it's hexadecimal)
-        shl ax, 4
-        add ax, ax
+            inc     si
 
-        jmp .next_char
+        jmp     atoh_conv_loop
 
-    .end:
+    atoh_conv_done:
         ret

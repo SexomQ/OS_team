@@ -1,3 +1,4 @@
+
 menu_handle_floppy_ram:
     call clear_screen
 
@@ -51,22 +52,33 @@ menu_handle_floppy_ram:
     call prompt
     ;; Convert the string to a hex
     mov si, hex_conversion_buffer
-    call hex_string_to_int
-    mov [ram_address], ax
+    mov di, ram_address
+    call string_to_hex
   
+    call clear_current_row
+
+    ; get the offset address
+    mov si, RAM_OFFSET_PROMPT
+    mov di, hex_conversion_buffer
+    call prompt
+    ;; Convert the string to a hex
+    mov si, hex_conversion_buffer
+    mov di, ram_address + 2
+    call string_to_hex
+
     call clear_current_row
 
     ; mov di, conversion_buffer
     ; mov ax, [number_of_sectors]
     ; call int_to_string
-    ; mov si, hex_conversion_buffer
+    ; mov si, conversion_buffer
     ; call print_string
 
 read_floppy_ram:
     ; Set up the RAM address to store the data
     mov bx, [ram_address]  ; RAM address to store the data
     mov es, bx  ; Set the segment register to the RAM address
-    mov bx, 0x0000  ; Offset to the RAM address
+    mov bx, [ram_address + 2]  ; Offset to the RAM address
 
     ; Set up the floppy disk parameters
     mov ah, 0x02  ; Read sector function
@@ -78,96 +90,138 @@ read_floppy_ram:
 
     int 0x13  ; BIOS interrupt
 
-    ; print the data from the RAM address
-    mov ch, byte [number_of_sectors]
-    pusha
-    mov bx, [ram_address]
-    mov es, bx
-    xor bx, bx
-    xor dx, dx
-    mov ah, 0eh
+    ;; check the error code
+    cmp ah, 0
+        mov al, ah; convert ah to ax
+        mov ah, 0
+        mov [error_code], ax
 
-    .loop_sectors:
-        cmp ch, 0
-        je stop_printing
+        mov ax, 0x7e00
+        mov ds, ax
+        mov es, ax
+        mov ss, ax
+        mov sp, ax
+    jne .ktf_floppy_error
 
+    ;; print success message
+    mov si, FLOPPY_SUCCESS_MSG
+    mov dx, 0000H; cursor coordinates
+    mov bl, 2; green color
+    mov bh, 0
+    call print_string
+    mov bl, 0x0F; reset color
+
+    mov dx, 0200H;
+    mov si, WAIT_FOR_ENTER_MSG
+    call print_string
+    jmp .print_data
+
+    .ktf_floppy_error:
+        
+        mov si, FLOPPY_ERROR_MSG
+        mov dx, 0000H; cursor coordinates
+        mov bl, 4; red color
+        mov bh, 0
+        call print_string
+        mov bl, 0x0F; reset color
+        ;; convert error code to string representation of number
+        mov ax, [error_code]
+        mov di, conversion_buffer
+        call int_to_string
+        mov si, conversion_buffer
+        mov dx, 0020H; cursor coordinates
+        mov bh, 0
+        call print_string
+
+        mov dx, 0200H;
+        mov si, WAIT_FOR_ENTER_MSG
+        call print_string
+        jmp stop_printing
+
+    .print_data:
+        mov word [cursor_coords], 0400H
+        call sync_cursor
+
+        ; print the data from the RAM address
+        mov cx, 0
+        pusha
+        mov bx, [ram_address]
+        mov es, bx
+        xor bx, bx
+        mov bx, [ram_address + 2]
         xor dx, dx
-        .loop_sector:
-            cmp dx, 512
-            je .loop_sectors_dec
 
-            mov al, [es:bx]
-            int 10h
+        .loop_sectors:
+            cmp cx, [number_of_sectors]
+            je stop_printing
 
-            inc bx
-            inc dx
-            jmp .loop_sector
+            xor dx, dx
+            .loop_sector:
+                cmp dx, 512
+                je .loop_sectors_dec
 
-        .loop_sectors_dec:
-            dec ch
-            jmp .loop_sectors
-    popa
-    jmp stop_printing
-    
-    ; jmp print_ram
-    ; ret
+                mov ah, 0eh
+                mov al, [es:bx]
+                int 10h
 
-; check_simp:
-;     ; mov di, conversion_buffer
-;     ; mov ax, [number_of_sectors]
-;     ; call int_to_string
-;     ; mov si, conversion_buffer
-;     ; call print_string
+                inc bx
+                inc dx
+                jmp .loop_sector
 
-;     mov byte [number_of_sectors], 0x05
+            .loop_sectors_dec:
+                mov byte [three], 3
+                ; xor ax, ax
+                inc cx
+                mov ax, cx
+                div byte [three]
+                
+                mov al, ah; convert ah to ax
+                mov ah, 0
+                mov [remainder], ax
 
-;     mov ch, byte [number_of_sectors]
-;     pusha
-;     .loop:
-;         cmp ch, 0
-;         je stop_printing
+                xor ax, ax
+                    mov es, [ram_address]
+                    ; xor bx, bx
+                    ; mov bx, [ram_address + 2]
+                
+                ; ; mov ax, [remainder]
+                ; ; mov di, conversion_buffer
+                ; ; call int_to_string
+                ; ; mov si, conversion_buffer
+                ; ; mov dx, 0800H; cursor coordinates
+                ; ; mov bh, 0
+                ; ; call print_string
 
-;         mov al, "S"
-;         mov ah, 0x0e
-;         int 10h
+                cmp word [remainder], 0
+                je stop_printing
 
-;         dec ch
-;         jmp .loop
-;     popa
-;     jmp stop_printing
+                jmp .loop_sectors
 
+        .wait_space_press:
+            ; compare the key pressed to space or enter, do different things for each
+            ; mov ah, 0
+            ; int 16h
+            ; cmp al, 0x0d
+            ; je stop_printing
+            ; cmp al, 0x20
+            ;     xor ax, ax
+            ;     mov bx, [ram_address]
+            ;     mov es, bx
+            ;     xor bx, bx
+            ;     mov bx, [ram_address + 2]
+            ; je .loop_sectors
 
-; print_ram:
-;     xor cx, cx
-;     mov bx, 0x4000
-;     mov es, bx
-;     xor bx, bx
-;     xor dx, dx
-;     mov ah, 0eh
-;     jmp print_str_from_ram
-
-; print_str_from_ram:
-;     cmp cx, 1024
-;     je stop_printing
-
-;     mov al, [es:bx]
-;     int 10h
-
-;     inc cx
-;     inc bx
-;     jmp print_str_from_ram
-
-; ; ; check_if_last_sector:
-; ; ;     cmp 
-; ; ;     je stop_printing
-; ; ;     dec dl
-
-; ; ;     xor cx, cx
-
-; ; ;     jmp print_str_from_ram
-
+        popa
+        jmp stop_printing
+        
 
 stop_printing:
-    mov al, "E"
-    mov ah, 0x0e
-    int 10h
+    mov ax, 0x7e00
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov sp, ax
+
+    call wait_for_enter
+    mov word [cursor_coords], 0000H
+    jmp menu

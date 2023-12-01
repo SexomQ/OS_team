@@ -1,6 +1,7 @@
 %define BACKSPACE 0x08
 %define ENTER 0x0D
 %define ESC 0x1B
+%define SPACE 0x20
 %define ARROW_UP_SCANCODE 0x48
 %define ARROW_DOWN_SCANCODE 0x50
 %define MAX_CHARACTER_COUNT 256
@@ -30,9 +31,8 @@ section .data
     number dw 0
     sector_write_count dw 0
     number_of_sectors db 0
-    ram_address dd 0
-    ram_offset dd 0
-    
+    error_code dw 0
+    remainder dw 0
 
     ALEX_MESSAGE db "@@@FAF-211 Alex ANDRIES###@@@", 0
     TUDOR_MESSAGE db "@@@FAF-211 Tudor SCLIFOS###@@@", 0
@@ -55,7 +55,9 @@ section .bss
     floppy_buffer resb 512
     names_buffer resb 512
     conversion_buffer resb 32
-    hex_conversion_buffer resb 64  
+    hex_conversion_buffer resb 64 
+    ram_address resb 4
+    three resb 2
 
 section .text
     global main
