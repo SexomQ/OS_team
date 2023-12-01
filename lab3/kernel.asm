@@ -41,6 +41,7 @@ section .data
     REPETITIONS_PROMPT db "Enter number of repetitions: ", 0
     REPETITIONS_BETWEEN_MSG db "Number msut be between 1 and 30_000", 0
     WAIT_FOR_ENTER_MSG db "Press ENTER to continue", 0
+    RAM_ADDRESS_PROMPT db "Enter RAM address: ", 0
 
 section .bss
     conversion_buffer resb 32
