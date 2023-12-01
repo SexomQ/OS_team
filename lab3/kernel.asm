@@ -49,7 +49,7 @@ section .data
     NUMBER_OF_SECTORS_PROMPT db "Enter number of sectors: ", 0
     RAM_ADDRESS_PROMPT db "Enter RAM address: ", 0
     RAM_OFFSET_PROMPT db "Enter RAM offset: ", 0
-
+    BYTES_PROMPT db "Enter bytes number: ", 0
 
 section .bss
     buffer resb 257
@@ -122,7 +122,7 @@ menu:
         cmp byte [menu_selection], 1
         je menu_handle_floppy_ram
         cmp byte [menu_selection], 2
-        ; je .menu_handle_ram_floppy
+        je ram_to_floppy
         jmp .menu_read_char; read another character
 
 print_menu:
@@ -161,4 +161,5 @@ print_menu:
 %include "tasks/initial_floppy_data.asm"
 %include "tasks/keyboard_to_floppy.asm"
 %include "tasks/floppy_to_ram.asm"
+%include "tasks/ram_to_floppy.asm"
 ; %include "lab3/utils/conversion.asm"
