@@ -9,6 +9,15 @@ wait_for_enter:
     popa
     ret
 
+wait_for_space:
+    pusha
+    mov ah, 0
+    int 16h
+    cmp al, SPACE
+    jne wait_for_space
+    popa
+    ret
+
 ;; Syncs the cursor with the coordinates stored in cursor_coords
 sync_cursor:
     pusha

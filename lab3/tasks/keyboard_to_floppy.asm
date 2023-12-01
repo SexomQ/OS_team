@@ -110,7 +110,7 @@ keyboard_to_floppy:
     mov dh, byte [head]
     mov bx, floppy_buffer
     int 13h
-    ;; check the error code
+
     cmp ah, 0
     jne .ktf_floppy_error
     ;; print success message

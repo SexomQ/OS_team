@@ -1,6 +1,7 @@
 %define BACKSPACE 0x08
 %define ENTER 0x0D
 %define ESC 0x1B
+%define SPACE 0x20
 %define ARROW_UP_SCANCODE 0x48
 %define ARROW_DOWN_SCANCODE 0x50
 %define MAX_CHARACTER_COUNT 256
@@ -9,6 +10,7 @@
 
 section .data
     BOOT_DISK db 0
+    SECTOR_SIZE dw 512
     menu_selection db 0
 
     SPACE_STR db " ", 0
@@ -28,6 +30,9 @@ section .data
     sector db 0
     number dw 0
     sector_write_count dw 0
+    number_of_sectors db 0
+    error_code dw 0
+    remainder dw 0
 
     ALEX_MESSAGE db "@@@FAF-211 Alex ANDRIES###@@@", 0
     TUDOR_MESSAGE db "@@@FAF-211 Tudor SCLIFOS###@@@", 0
@@ -41,12 +46,19 @@ section .data
     REPETITIONS_PROMPT db "Enter number of repetitions: ", 0
     REPETITIONS_BETWEEN_MSG db "Number msut be between 1 and 30_000", 0
     WAIT_FOR_ENTER_MSG db "Press ENTER to continue", 0
+    NUMBER_OF_SECTORS_PROMPT db "Enter number of sectors: ", 0
     RAM_ADDRESS_PROMPT db "Enter RAM address: ", 0
+    RAM_OFFSET_PROMPT db "Enter RAM offset: ", 0
+
 
 section .bss
-    conversion_buffer resb 32
     buffer resb 257
     floppy_buffer resb 512
+    names_buffer resb 512
+    conversion_buffer resb 32
+    hex_conversion_buffer resb 64 
+    ram_address resb 4
+    three resb 2
 
 section .text
     global main
@@ -108,7 +120,7 @@ menu:
         cmp byte [menu_selection], 0
         je keyboard_to_floppy
         cmp byte [menu_selection], 1
-        ; je .menu_handle_floppy_ram
+        je menu_handle_floppy_ram
         cmp byte [menu_selection], 2
         ; je .menu_handle_ram_floppy
         jmp .menu_read_char; read another character
@@ -148,4 +160,5 @@ print_menu:
 %include "utils/io.asm"
 %include "tasks/initial_floppy_data.asm"
 %include "tasks/keyboard_to_floppy.asm"
+%include "tasks/floppy_to_ram.asm"
 ; %include "lab3/utils/conversion.asm"
