@@ -2,10 +2,11 @@ column_temp db 0
 
 wait_for_enter:
     pusha
-    mov ah, 0
-    int 16h
-    cmp al, ENTER
-    jne wait_for_enter
+    .wait_for_enter_loop:
+        mov ah, 0
+        int 16h
+        cmp al, ENTER
+        jne .wait_for_enter_loop
     popa
     ret
 
