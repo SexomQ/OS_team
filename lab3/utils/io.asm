@@ -22,18 +22,9 @@ wait_for_space:
 ;; Syncs the cursor with the coordinates stored in cursor_coords
 sync_cursor:
     pusha
-    ;; calculate overflows for row and translate them to columns coords
-    ;; dh (row) = coord_y + coord_x / 80
-    ;; dl (column) = coord_x % 80
-    mov al, byte [cursor_x]
-    mov ah, 0
-    mov bl, 80
-    div bl
-    mov dh, al
-    mov dl, ah
-    
     mov ah, 0x02
     mov bh, 0x00
+    mov dx, [cursor_coords]
     int 0x10
     popa
     ret
@@ -119,7 +110,7 @@ prompt:
 
     .prompt_handle_symbol:
         cmp cx, MAX_CHARACTER_COUNT; if the character counter is equal to the maximum character count
-        je .prompt_max_char_limit
+        je .prompt_read_char
 
         mov [di], al; store the character in the buffer
         inc di; increment the buffer pointer
@@ -129,8 +120,6 @@ prompt:
         mov ah, 0eh; print the character
         int 10h
         popa; restore all registers
-        .prompt_max_char_limit:
-        call sync_cursor
         jmp .prompt_read_char; read another character
 
     .prompt_handle_backspace:
