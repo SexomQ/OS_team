@@ -146,4 +146,11 @@ keyboard_to_floppy:
         call print_string
         call wait_for_enter
         mov word [cursor_coords], 0000H
+        ;; clean up first 512 buffer characters
+        mov cx, 512
+        mov si, floppy_buffer
+        .ktf_clean_loop:
+            mov byte [si], 0
+            inc si
+        loop .ktf_clean_loop
         jmp menu
